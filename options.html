@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Security Question Autofill — Settings</title>
+  <link rel="stylesheet" href="styles/options.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Security Question Autofill</h1>
+    <p class="subtitle">Manage your security question answers for <strong>atlasauth.b2clogin.com</strong></p>
+
+    <section id="entries-section">
+      <h2>Saved Entries</h2>
+      <div id="entries-list">
+        <p class="empty-state">No entries yet. Add one below.</p>
+      </div>
+    </section>
+
+    <section id="form-section">
+      <h2 id="form-title">Add New Entry</h2>
+      <div class="form-group">
+        <label for="keywords-input">
+          Keywords
+          <span class="hint">(comma-separated words/phrases from the question)</span>
+        </label>
+        <input
+          type="text"
+          id="keywords-input"
+          placeholder="e.g. first company, worked for"
+          autocomplete="off"
+        />
+      </div>
+      <div class="form-group">
+        <label for="answer-input">Answer</label>
+        <input
+          type="text"
+          id="answer-input"
+          placeholder="Your answer"
+          autocomplete="off"
+        />
+      </div>
+      <div class="form-actions">
+        <button id="save-btn" class="btn btn-primary">Save Entry</button>
+        <button id="cancel-btn" class="btn btn-secondary" style="display:none">Cancel</button>
+      </div>
+      <p id="form-status" class="status-msg" aria-live="polite"></p>
+    </section>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>
