@@ -1,8 +1,44 @@
-// content.js — injected into atlasauth.b2clogin.com
+// content.js
 
-function findMatchingAnswer(questionText, entries) {
+function matchesDomain(siteDomain, hostname) {
+  return hostname === siteDomain || hostname.endsWith('.' + siteDomain);
+}
+
+// Returns the username value currently visible/filled on the page.
+// Checks common input patterns and read-only/disabled fields.
+function detectUsernameOnPage() {
+  const candidates = [];
+
+  // Priority 1: email inputs with a value
+  document.querySelectorAll('input[type="email"]').forEach(el => {
+    if (el.value && el.value.trim()) candidates.push(el.value.trim());
+  });
+
+  // Priority 2: text inputs with common username/email id or name attributes
+  document.querySelectorAll('input[type="text"]').forEach(el => {
+    if (!el.value || !el.value.trim()) return;
+    const key = ((el.id || '') + ' ' + (el.name || '')).toLowerCase();
+    if (/user|email|login|account/.test(key)) {
+      candidates.push(el.value.trim());
+    }
+  });
+
+  // Priority 3: any readonly or disabled input with a value (pre-filled usernames)
+  document.querySelectorAll('input[readonly], input[disabled]').forEach(el => {
+    if (el.value && el.value.trim()) candidates.push(el.value.trim());
+  });
+
+  return candidates;
+}
+
+function usernameMatches(storedUsername, pageCandidates) {
+  const lower = storedUsername.toLowerCase();
+  return pageCandidates.some(c => c.toLowerCase() === lower);
+}
+
+function findMatchingAnswer(questionText, qaEntries) {
   const lower = questionText.toLowerCase();
-  for (const entry of entries) {
+  for (const entry of qaEntries) {
     if (!entry.keywords || entry.keywords.length === 0) continue;
     const matched = entry.keywords.some(kw => {
       const trimmed = kw.toLowerCase().trim();
@@ -14,7 +50,6 @@ function findMatchingAnswer(questionText, entries) {
 }
 
 function fillNativeInput(input, value) {
-  // Use native input setter to work with React/Angular controlled inputs
   const nativeSetter = Object.getOwnPropertyDescriptor(
     window.HTMLInputElement.prototype, 'value'
   );
@@ -27,8 +62,7 @@ function fillNativeInput(input, value) {
   input.dispatchEvent(new Event('change', { bubbles: true }));
 }
 
-function tryAutofill(entries) {
-  // Find all security question paragraphs
+function tryAutofill(qaEntries) {
   const questionElements = document.querySelectorAll('p.textInParagraph');
   if (questionElements.length === 0) return false;
 
@@ -40,10 +74,9 @@ function tryAutofill(entries) {
       questionEl.textContent ||
       '';
 
-    const answer = findMatchingAnswer(questionText, entries);
+    const answer = findMatchingAnswer(questionText, qaEntries);
     if (!answer) return;
 
-    // The input is in the next sibling <li> of the question's parent <li>
     const questionLi = questionEl.closest('li');
     if (!questionLi) return;
 
@@ -60,26 +93,51 @@ function tryAutofill(entries) {
   return filledCount > 0;
 }
 
-function autofillWithObserver(entries) {
-  // Try immediately in case elements are already in the DOM
-  if (tryAutofill(entries)) return;
+// Picks the first matching site config for the current page, re-detecting
+// the username each time it is called so it works even when the username
+// field is populated by the page's own JavaScript after document_idle.
+function pickMatchingSite(matchingSites) {
+  for (const site of matchingSites) {
+    const configuredUsername = site.username && site.username.trim();
 
-  // Fall back to MutationObserver for dynamically loaded pages
+    if (configuredUsername) {
+      const pageCandidates = detectUsernameOnPage();
+      if (!usernameMatches(configuredUsername, pageCandidates)) continue;
+    }
+
+    const qaEntries = site.qaEntries || [];
+    if (qaEntries.length === 0) continue;
+
+    return qaEntries;
+  }
+  return null;
+}
+
+function autofillWithObserver(matchingSites) {
+  // Try immediately — username fields may already be in the DOM.
+  const qaEntries = pickMatchingSite(matchingSites);
+  if (qaEntries && tryAutofill(qaEntries)) return;
+
   const observer = new MutationObserver(() => {
-    if (tryAutofill(entries)) {
+    // Re-run site selection on every mutation so that a username field
+    // appearing dynamically is detected before attempting to fill.
+    const entries = pickMatchingSite(matchingSites);
+    if (entries && tryAutofill(entries)) {
       observer.disconnect();
     }
   });
 
   observer.observe(document.body, { childList: true, subtree: true });
-
-  // Stop observing after 15 seconds to avoid memory leaks
   setTimeout(() => observer.disconnect(), 15000);
 }
 
-// Load Q&A entries from storage and trigger autofill
-chrome.storage.local.get('qaEntries', result => {
-  const entries = result.qaEntries || [];
-  if (entries.length === 0) return;
-  autofillWithObserver(entries);
+// Main: load sites, find those matching this page's hostname.
+chrome.storage.local.get('sites', result => {
+  const sites = result.sites || [];
+  const hostname = window.location.hostname;
+
+  const matchingSites = sites.filter(site => matchesDomain(site.domain, hostname));
+  if (matchingSites.length === 0) return;
+
+  autofillWithObserver(matchingSites);
 });

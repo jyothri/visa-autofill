@@ -1,11 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "Security Question Autofill",
-  "version": "1.0.0",
-  "description": "Automatically fills security question answers on atlasauth.b2clogin.com",
+  "name": "Form Autofill",
+  "version": "2.0.0",
+  "description": "Automatically fills security question answers on configured websites",
   "permissions": ["storage", "activeTab"],
   "host_permissions": [
-    "https://atlasauth.b2clogin.com/*"
+    "https://atlasauth.b2clogin.com/*",
+    "https://usvisascheduling.com/*"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -18,7 +19,10 @@
   "options_page": "options.html",
   "content_scripts": [
     {
-      "matches": ["https://atlasauth.b2clogin.com/*"],
+      "matches": [
+        "https://atlasauth.b2clogin.com/*",
+        "https://usvisascheduling.com/*"
+      ],
       "js": ["content.js"],
       "run_at": "document_idle"
     }

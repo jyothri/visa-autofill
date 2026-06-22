@@ -2,50 +2,83 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Security Question Autofill — Settings</title>
+  <title>Form Autofill — Settings</title>
   <link rel="stylesheet" href="styles/options.css">
 </head>
 <body>
   <div class="container">
-    <h1>Security Question Autofill</h1>
-    <p class="subtitle">Manage your security question answers for <strong>atlasauth.b2clogin.com</strong></p>
+    <h1>Form Autofill</h1>
+    <p class="subtitle">Configure websites and their security question answers</p>
 
-    <section id="entries-section">
-      <h2>Saved Entries</h2>
-      <div id="entries-list">
-        <p class="empty-state">No entries yet. Add one below.</p>
+    <!-- SITES LIST VIEW -->
+    <div id="view-sites">
+      <div class="section-header">
+        <h2>Websites</h2>
+        <button id="add-site-btn" class="btn btn-primary btn-sm">+ Add Website</button>
       </div>
-    </section>
+      <div id="sites-list">
+        <p class="empty-state">No websites configured. Click "Add Website" to get started.</p>
+      </div>
+    </div>
 
-    <section id="form-section">
-      <h2 id="form-title">Add New Entry</h2>
-      <div class="form-group">
-        <label for="keywords-input">
-          Keywords
-          <span class="hint">(comma-separated words/phrases from the question)</span>
-        </label>
-        <input
-          type="text"
-          id="keywords-input"
-          placeholder="e.g. first company, worked for"
-          autocomplete="off"
-        />
+    <!-- SITE EDIT VIEW (hidden by default) -->
+    <div id="view-edit-site" class="hidden">
+      <div class="section-header">
+        <button id="back-btn" class="btn btn-secondary btn-sm">&larr; Back</button>
+        <h2 id="edit-site-title">Add Website</h2>
       </div>
-      <div class="form-group">
-        <label for="answer-input">Answer</label>
-        <input
-          type="text"
-          id="answer-input"
-          placeholder="Your answer"
-          autocomplete="off"
-        />
+
+      <section class="card">
+        <div class="form-group">
+          <label for="site-domain">Domain <span class="required">*</span></label>
+          <input type="text" id="site-domain" placeholder="e.g. atlasauth.b2clogin.com" autocomplete="off" />
+        </div>
+        <div class="form-group">
+          <label for="site-username">
+            Username
+            <span class="hint">(optional — only fill for this user; exact match)</span>
+          </label>
+          <input type="text" id="site-username" placeholder="e.g. john@example.com" autocomplete="off" />
+        </div>
+        <div class="form-actions">
+          <button id="save-site-btn" class="btn btn-primary">Save Website</button>
+          <p id="site-status" class="status-msg" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <!-- Q&A ENTRIES FOR THIS SITE (hidden until site is saved) -->
+      <div id="qa-section" class="hidden">
+        <div class="section-header" style="margin-top: 28px;">
+          <h2>Q&amp;A Entries</h2>
+        </div>
+        <section class="card">
+          <div id="qa-list">
+            <p class="empty-state">No entries yet. Add one below.</p>
+          </div>
+        </section>
+
+        <!-- ADD / EDIT Q&A ENTRY -->
+        <section class="card">
+          <h3 id="qa-form-title">Add Q&amp;A Entry</h3>
+          <div class="form-group">
+            <label for="qa-keywords">
+              Keywords <span class="required">*</span>
+              <span class="hint">(comma-separated words/phrases from the question)</span>
+            </label>
+            <input type="text" id="qa-keywords" placeholder="e.g. first company, worked for" autocomplete="off" />
+          </div>
+          <div class="form-group">
+            <label for="qa-answer">Answer <span class="required">*</span></label>
+            <input type="text" id="qa-answer" placeholder="Your answer" autocomplete="off" />
+          </div>
+          <div class="form-actions">
+            <button id="save-qa-btn" class="btn btn-primary">Add Entry</button>
+            <button id="cancel-qa-btn" class="btn btn-secondary hidden">Cancel</button>
+            <p id="qa-status" class="status-msg" aria-live="polite"></p>
+          </div>
+        </section>
       </div>
-      <div class="form-actions">
-        <button id="save-btn" class="btn btn-primary">Save Entry</button>
-        <button id="cancel-btn" class="btn btn-secondary" style="display:none">Cancel</button>
-      </div>
-      <p id="form-status" class="status-msg" aria-live="polite"></p>
-    </section>
+    </div>
   </div>
 
   <script src="options.js"></script>

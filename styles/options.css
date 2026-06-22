@@ -26,36 +26,47 @@ h1 {
   color: #0f0f0f;
 }
 
-.subtitle {
-  color: #555;
-  margin: 0 0 32px;
-}
-
 h2 {
   font-size: 16px;
   font-weight: 600;
-  margin: 0 0 12px;
+  margin: 0;
   color: #0f0f0f;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 8px;
 }
 
-section {
+h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 14px;
+  color: #0f0f0f;
+}
+
+.subtitle {
+  color: #555;
+  margin: 0 0 28px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Section header with title + action button on same line */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+/* Card container */
+.card {
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 20px 24px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
-/* Entry cards */
-
-.empty-state {
-  color: #888;
-  font-style: italic;
-  margin: 0;
-}
-
+/* Entry cards (sites list + Q&A list) */
 .entry-card {
   display: flex;
   justify-content: space-between;
@@ -72,6 +83,27 @@ section {
 .entry-info {
   flex: 1;
   min-width: 0;
+}
+
+.entry-domain {
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.entry-meta {
+  font-size: 12px;
+  color: #374151;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.entry-meta.muted {
+  color: #9ca3af;
 }
 
 .entry-keywords,
@@ -93,8 +125,15 @@ section {
   flex-shrink: 0;
 }
 
-/* Form */
+/* Empty state */
+.empty-state {
+  color: #9ca3af;
+  font-style: italic;
+  margin: 0;
+  padding: 8px 0;
+}
 
+/* Form */
 .form-group {
   margin-bottom: 16px;
 }
@@ -110,6 +149,11 @@ section {
   color: #888;
   font-size: 12px;
   margin-left: 6px;
+}
+
+.required {
+  color: #b91c1c;
+  margin-left: 2px;
 }
 
 .form-group input {
@@ -129,12 +173,12 @@ section {
 
 .form-actions {
   display: flex;
+  align-items: center;
   gap: 10px;
-  margin-top: 4px;
+  flex-wrap: wrap;
 }
 
 /* Buttons */
-
 .btn {
   padding: 8px 16px;
   border: none;
@@ -142,7 +186,8 @@ section {
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.15s, opacity 0.15s;
+  transition: background 0.15s;
+  white-space: nowrap;
 }
 
 .btn-primary {
@@ -177,12 +222,11 @@ section {
   font-size: 13px;
 }
 
-/* Status */
-
+/* Status messages */
 .status-msg {
-  margin-top: 10px;
   font-size: 13px;
   min-height: 18px;
+  margin: 0;
 }
 
 .status-msg.success {

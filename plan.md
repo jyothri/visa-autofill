@@ -37,27 +37,27 @@ autofill/
 - Options page: `options.html`
 
 ### 2. Chrome Storage Schema
-Stored under `chrome.storage.local` key `qaEntries`:
+Stored under `chrome.storage.local` key `sites`:
 
 ```json
 [
   {
-    "id": "uuid-or-timestamp",
-    "keywords": ["first company", "worked for"],
-    "answer": "Acme Corp"
-  },
-  {
-    "id": "uuid-or-timestamp",
-    "keywords": ["first job", "city", "town"],
-    "answer": "New York"
+    "id": "uid",
+    "domain": "atlasauth.b2clogin.com",
+    "username": "john@example.com",
+    "qaEntries": [
+      { "id": "uid", "keywords": ["first company", "worked for"], "answer": "Acme Corp" },
+      { "id": "uid", "keywords": ["first job", "city", "town"], "answer": "New York" }
+    ]
   }
 ]
 ```
 
-Each entry contains:
-- `id`: unique identifier (Date.now() string)
-- `keywords`: array of keywords/phrases for matching (case-insensitive)
-- `answer`: the answer to autofill
+Each site contains:
+- `id`: unique identifier
+- `domain`: hostname to match (e.g. `atlasauth.b2clogin.com`); supports subdomain match
+- `username`: optional — if set, autofill only runs when this username is detected on the page (case-insensitive exact match)
+- `qaEntries`: array of Q&A pairs, each with `keywords` and `answer`
 
 ### 3. `content.js` — Content Script
 **Injection**: Runs at `document_idle` on `atlasauth.b2clogin.com`

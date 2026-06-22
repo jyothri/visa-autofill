@@ -3,12 +3,13 @@
 const statusText = document.getElementById('status-text');
 const openOptionsBtn = document.getElementById('open-options');
 
-chrome.storage.local.get('qaEntries', result => {
-  const entries = result.qaEntries || [];
-  if (entries.length === 0) {
-    statusText.textContent = 'No entries configured.';
+chrome.storage.local.get('sites', result => {
+  const sites = result.sites || [];
+  if (sites.length === 0) {
+    statusText.textContent = 'No websites configured.';
   } else {
-    statusText.textContent = `${entries.length} Q&A entr${entries.length === 1 ? 'y' : 'ies'} configured.`;
+    const totalQa = sites.reduce((sum, s) => sum + (s.qaEntries || []).length, 0);
+    statusText.textContent = `${sites.length} site${sites.length === 1 ? '' : 's'}, ${totalQa} Q&A entr${totalQa === 1 ? 'y' : 'ies'}.`;
   }
 });
 
